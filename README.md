@@ -1,12 +1,15 @@
 # BDCC Better Chastity
 
-BDCC Better Chastity is a small source mod for **Broken Dreams Correctional Center**. It adds three non-graphic, mechanics-focused chastity restraint items with better status text, fit/service actions, save data, and more varied struggle behavior.
+BDCC Better Chastity is a small source mod for **Broken Dreams Correctional Center**. It adds six non-graphic, mechanics-focused chastity restraint items with better status text, fit/service actions, save data, and more varied struggle behavior.
 
 ## What It Adds
 
 - **Ergonomic Chastity Cage**: lower-pressure long-term cage with serviceable fit.
 - **Tamper-Evident Chastity Cage**: stricter cage with seal checks and stronger restraint level.
 - **Timed Smart Chastity Cage**: configurable smart cage with rotating protocol modes.
+- **Flat Ergonomic Chastity Cage**: low-profile plate design with serviceable pressure settings.
+- **Flat Tamper-Evident Chastity Cage**: recessed seal and plate number variant.
+- **Flat Timed Smart Chastity Cage**: flat smart-lock variant with timer and silent status behavior.
 - **BetterChastity restraint data**: struggle outcomes include pressure, fit, seal, hygiene, and comfort flavor rather than a single generic result.
 
 All content is written to be non-graphic. It uses BDCC's existing item slots, tags, rigged models, and inventory art where possible.
@@ -43,6 +46,9 @@ In the debug item menu, search by item ID:
 BBC_ErgonomicChastityCage
 BBC_TamperEvidentChastityCage
 BBC_TimedSmartChastityCage
+BBC_FlatErgonomicChastityCage
+BBC_FlatTamperEvidentChastityCage
+BBC_FlatTimedSmartChastityCage
 ```
 
 ## Source Layout
@@ -55,6 +61,9 @@ Modules/
       ErgonomicChastityCage.gd
       TamperEvidentChastityCage.gd
       TimedSmartChastityCage.gd
+      FlatErgonomicChastityCage.gd
+      FlatTamperEvidentChastityCage.gd
+      FlatTimedSmartChastityCage.gd
     Restraints/
       BetterChastityRestraint.gd
 ```

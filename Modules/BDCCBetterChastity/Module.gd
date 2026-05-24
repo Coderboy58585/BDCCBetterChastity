@@ -14,6 +14,9 @@ func _init():
 		"res://Modules/BDCCBetterChastity/Items/ErgonomicChastityCage.gd",
 		"res://Modules/BDCCBetterChastity/Items/TamperEvidentChastityCage.gd",
 		"res://Modules/BDCCBetterChastity/Items/TimedSmartChastityCage.gd",
+		"res://Modules/BDCCBetterChastity/Items/FlatErgonomicChastityCage.gd",
+		"res://Modules/BDCCBetterChastity/Items/FlatTamperEvidentChastityCage.gd",
+		"res://Modules/BDCCBetterChastity/Items/FlatTimedSmartChastityCage.gd",
 	]
 
 func resetFlagsOnNewDay():

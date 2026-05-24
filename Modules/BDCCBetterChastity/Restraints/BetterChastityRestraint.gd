@@ -12,10 +12,16 @@ func setSealIntegrity(new_value):
 func getProfileName():
 	if(profile == "comfort"):
 		return "comfort-fit"
+	if(profile == "flat_comfort"):
+		return "flat comfort-fit"
 	if(profile == "strict"):
 		return "strict-fit"
+	if(profile == "flat_strict"):
+		return "flat seal-fit"
 	if(profile == "smart"):
 		return "smart-lock"
+	if(profile == "flat_smart"):
+		return "flat smart-lock"
 	return "balanced-fit"
 
 func doStruggle(_pc, _minigame:MinigameResult):
@@ -38,6 +44,15 @@ func doStruggle(_pc, _minigame:MinigameResult):
 			text = "{user.name} shifts against the ergonomic cage. It stays secure without biting in too harshly."
 			damage = calcDamage(_pc, _minigame, 0.15)
 			stamina = 3
+	elif(profile == "flat_comfort"):
+		if(can_work_properly):
+			text = "{user.name} feels along the flat ergonomic plate, but the smooth face gives very little purchase."
+			damage = calcDamage(_pc, _minigame, 0.45)
+			stamina = 5
+		else:
+			text = "{user.name} shifts against the flat ergonomic cage. The pressure stays even and controlled."
+			damage = calcDamage(_pc, _minigame, 0.1)
+			stamina = 3
 	elif(profile == "strict"):
 		if(failChanceLowScore(_pc, 20, _minigame)):
 			text = "{user.name} pulls at the tamper-evident seal. The seal tightens down with a sharp warning click."
@@ -51,6 +66,32 @@ func doStruggle(_pc, _minigame:MinigameResult):
 			text = "{user.name} tries to worry at the tamper-evident cage, but the reinforced seal barely moves."
 			damage = calcDamage(_pc, _minigame, 0.08)
 			stamina = 5
+	elif(profile == "flat_strict"):
+		if(failChanceLowScore(_pc, 22, _minigame)):
+			text = "{user.name} presses at the recessed seal. The flat plate shifts just enough to make the seal mark obvious."
+			damage = -0.6
+			pain = scaleDamage(3)
+		elif(can_work_properly):
+			text = "{user.name} works around the flat tamper plate. The edge gives a little, but the seal records the attempt."
+			damage = calcDamage(_pc, _minigame, 0.65)
+			stamina = 10
+		else:
+			text = "{user.name} tries to pry at the flat tamper plate, but there is almost nothing to catch."
+			damage = calcDamage(_pc, _minigame, 0.06)
+			stamina = 4
+	elif(profile == "flat_smart"):
+		if(failChanceLowScore(_pc, 20, _minigame)):
+			text = "{user.name} disturbs the flat smart plate and its status light answers with a warning blink."
+			damage = -0.45
+			pain = scaleDamage(2)
+		elif(can_work_properly):
+			text = "{user.name} watches the flat smart cage's recessed timer, trying to catch the lock between pulses."
+			damage = calcDamage(_pc, _minigame, 0.55)
+			stamina = 9
+		else:
+			text = "{user.name} shifts against the flat smart cage, but the flush face simply logs the pressure."
+			damage = calcDamage(_pc, _minigame, 0.08)
+			stamina = 4
 	else:
 		if(failChanceLowScore(_pc, 18, _minigame)):
 			text = "{user.name} disturbs the smart lock and it responds with a warning pulse."
