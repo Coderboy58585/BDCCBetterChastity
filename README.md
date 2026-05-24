@@ -13,7 +13,7 @@ All content is written to be non-graphic. It uses BDCC's existing item slots, ta
 
 ## Install From Source
 
-BDCC loads `.pck` and `.zip` resource packs from its mods folder. This repo is arranged so the `Modules/` folder sits at the resource-pack root.
+BDCC loads `.pck` and `.zip` resource packs from its mods folder. This repo is arranged so `BDCCBetterChastity.json` and the `Modules/` folder sit at the resource-pack root.
 
 On Windows:
 
@@ -34,6 +34,8 @@ Copy that ZIP into BDCC's mods folder:
 ```
 
 Then start BDCC and enable/reorder the mod if the game asks.
+
+If the launcher says `No 'BDCCBetterChastity.json' file provided inside the mod`, rebuild the zip and replace the old copy in the mods folder. If the launcher looks clean but the items still do not appear, press `Reset GR cache`, restart BDCC, and launch with `Play (modded)`.
 
 ## Source Layout
 
