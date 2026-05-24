@@ -37,6 +37,14 @@ Then start BDCC and enable/reorder the mod if the game asks.
 
 If the launcher says `No 'BDCCBetterChastity.json' file provided inside the mod`, rebuild the zip and replace the old copy in the mods folder. If the launcher looks clean but the items still do not appear, press `Reset GR cache`, restart BDCC, and launch with `Play (modded)`.
 
+In the debug item menu, search by item ID:
+
+```text
+BBC_ErgonomicChastityCage
+BBC_TamperEvidentChastityCage
+BBC_TimedSmartChastityCage
+```
+
 ## Source Layout
 
 ```text
