@@ -4,6 +4,8 @@ func getFlags():
 	return {
 		"BBC_ServiceCount": flag(FlagType.Number),
 		"BBC_LastDeviceMode": flag(FlagType.Text),
+		"BBC_ToyTrainingScore": flag(FlagType.Number),
+		"BBC_FeminizingProgramCount": flag(FlagType.Number),
 	}
 
 func _init():
@@ -20,6 +22,21 @@ func _init():
 		"res://Modules/BDCCBetterChastity/Items/FlatTimedSmartChastityCage.gd",
 		"res://Modules/BDCCBetterChastity/Items/PermanentChastityCage.gd",
 		"res://Modules/BDCCBetterChastity/Items/FlatPermanentChastityCage.gd",
+		"res://Modules/BDCCBetterChastity/Items/SoftTrainingDildo.gd",
+		"res://Modules/BDCCBetterChastity/Items/WeightedTrainingDildo.gd",
+		"res://Modules/BDCCBetterChastity/Items/ProstatePulseStimulator.gd",
+		"res://Modules/BDCCBetterChastity/Items/SterileSoundingKit.gd",
+		"res://Modules/BDCCBetterChastity/Items/EstraluxPatch.gd",
+	]
+
+	statusEffects = [
+		"res://Modules/BDCCBetterChastity/StatusEffects/SissyEuphoria.gd",
+		"res://Modules/BDCCBetterChastity/StatusEffects/ProstateFocus.gd",
+		"res://Modules/BDCCBetterChastity/StatusEffects/FeminizingShift.gd",
+	]
+
+	sexActivities = [
+		"res://Modules/BDCCBetterChastity/SexActivities/BetterChastityToyTraining.gd",
 	]
 
 func resetFlagsOnNewDay():

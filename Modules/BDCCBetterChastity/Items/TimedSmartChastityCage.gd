@@ -6,6 +6,7 @@ var current_color = 0
 var protocol_mode = 0
 var hours_remaining = 24
 var last_timer_second = -1
+var unlock_second = -1
 var timer_unlocked = false
 var use_count = 0
 var stimulation_style = 0
@@ -105,10 +106,7 @@ func useInCombat(_attacker, _receiver):
 	current_color += 1
 	if(current_color >= 3):
 		current_color = 0
-	if(hours_remaining > 0):
-		hours_remaining = max(0, hours_remaining - 1)
-	if(hours_remaining <= 0):
-		timer_unlocked = true
+	reduceTimerHours(1)
 	if(isWornByWearer()):
 		updateWearerAppearance()
 	var extra_text = "You cycle the smart cage protocol to "+["Standard", "Quiet", "Strict"][protocol_mode]+". The status light changes color and the timer now reads "+str(hours_remaining)+"h."
@@ -119,20 +117,36 @@ func getCurrentTimerSecond():
 		return GM.main.getTimeInGlobalSeconds()
 	return 0
 
+func ensureTimerStarted():
+	if(timer_unlocked):
+		hours_remaining = 0
+		return
+	if(unlock_second < 0):
+		var now = getCurrentTimerSecond()
+		unlock_second = now + max(0, hours_remaining) * 60 * 60
+		last_timer_second = now
+
+func reduceTimerHours(amount):
+	ensureTimerStarted()
+	if(timer_unlocked):
+		return
+	unlock_second = max(getCurrentTimerSecond(), unlock_second - int(amount) * 60 * 60)
+	syncTimer()
+
 func syncTimer():
 	var now = getCurrentTimerSecond()
-	if(last_timer_second < 0):
+	if(timer_unlocked):
+		hours_remaining = 0
+		return
+	ensureTimerStarted()
+	if(now >= unlock_second):
+		hours_remaining = 0
+		timer_unlocked = true
 		last_timer_second = now
 		return
-	if(now <= last_timer_second):
-		return
-	var elapsed_hours = int((now - last_timer_second) / (60 * 60))
-	if(elapsed_hours <= 0):
-		return
-	hours_remaining = max(0, hours_remaining - elapsed_hours)
-	last_timer_second += elapsed_hours * 60 * 60
-	if(hours_remaining <= 0):
-		timer_unlocked = true
+	var seconds_left = max(0, unlock_second - now)
+	hours_remaining = int(ceil(float(seconds_left) / float(60 * 60)))
+	last_timer_second = now
 
 func getPossibleActions():
 	return [
@@ -150,6 +164,7 @@ func saveData():
 	data["protocol_mode"] = protocol_mode
 	data["hours_remaining"] = hours_remaining
 	data["last_timer_second"] = last_timer_second
+	data["unlock_second"] = unlock_second
 	data["timer_unlocked"] = timer_unlocked
 	data["use_count"] = use_count
 	data["stimulation_style"] = stimulation_style
@@ -161,7 +176,10 @@ func loadData(data):
 	protocol_mode = clamp(SAVE.loadVar(data, "protocol_mode", 0), 0, 2)
 	hours_remaining = max(0, int(SAVE.loadVar(data, "hours_remaining", 24)))
 	last_timer_second = int(SAVE.loadVar(data, "last_timer_second", -1))
+	unlock_second = int(SAVE.loadVar(data, "unlock_second", -1))
 	timer_unlocked = SAVE.loadVar(data, "timer_unlocked", false)
+	if(unlock_second < 0 && last_timer_second >= 0):
+		unlock_second = last_timer_second + hours_remaining * 60 * 60
 	use_count = SAVE.loadVar(data, "use_count", 0)
 	stimulation_style = clamp(SAVE.loadVar(data, "stimulation_style", 0), 0, 2)
 
@@ -188,3 +206,5 @@ func applyDatapackEditVar(_id, _value):
 	if(_id == "hours_remaining"):
 		hours_remaining = max(0, int(_value))
 		timer_unlocked = hours_remaining <= 0
+		unlock_second = -1
+		ensureTimerStarted()
