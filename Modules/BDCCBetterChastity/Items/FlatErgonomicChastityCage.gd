@@ -1,7 +1,11 @@
 extends ItemBase
 
+const ChastityUseLogic = preload("res://Modules/BDCCBetterChastity/ChastityUseLogic.gd")
+
 var service_count = 0
 var pressure_setting = 1
+var use_count = 0
+var stimulation_style = 0
 
 func _init():
 	id = "BBC_FlatErgonomicChastityCage"
@@ -78,7 +82,8 @@ func useInCombat(_attacker, _receiver):
 		pressure_setting = 0
 	if(isWornByWearer()):
 		updateWearerAppearance()
-	return "You service the flat ergonomic cage and set the pressure to "+["relaxed", "close", "flush"][pressure_setting]+"."
+	var extra_text = "You service the flat ergonomic cage and set the pressure to "+["relaxed", "close", "flush"][pressure_setting]+"."
+	return ChastityUseLogic.new().perform(self, _attacker, "flat ergonomic cage", 1, extra_text, _receiver == null)
 
 func getPossibleActions():
 	return [
@@ -93,12 +98,16 @@ func saveData():
 	var data = .saveData()
 	data["service_count"] = service_count
 	data["pressure_setting"] = pressure_setting
+	data["use_count"] = use_count
+	data["stimulation_style"] = stimulation_style
 	return data
 
 func loadData(data):
 	.loadData(data)
 	service_count = SAVE.loadVar(data, "service_count", 0)
 	pressure_setting = clamp(SAVE.loadVar(data, "pressure_setting", 1), 0, 2)
+	use_count = SAVE.loadVar(data, "use_count", 0)
+	stimulation_style = clamp(SAVE.loadVar(data, "stimulation_style", 0), 0, 2)
 
 func getDatapackEditVars():
 	var result = .getDatapackEditVars()

@@ -1,9 +1,15 @@
 extends ItemBase
 
+const ChastityUseLogic = preload("res://Modules/BDCCBetterChastity/ChastityUseLogic.gd")
+
 var current_color = 0
 var protocol_mode = 0
 var hours_remaining = 12
 var silent_status = false
+var last_timer_second = -1
+var timer_unlocked = false
+var use_count = 0
+var stimulation_style = 0
 
 func _init():
 	id = "BBC_FlatTimedSmartChastityCage"
@@ -12,11 +18,15 @@ func getVisibleName():
 	return "Flat Timed Smart Chastity Cage"
 
 func getDescription():
+	syncTimer()
 	var mode_name = ["Standard", "Silent", "Strict"][protocol_mode]
 	var status_text = "audible"
 	if(silent_status):
 		status_text = "silent"
-	return "A flat smart chastity cage with a timer, flush status light, and recessed lock face. Its broad plate keeps the electronics protected and easy to inspect.\n[color=gray]Mode: "+mode_name+" | Timer: "+str(hours_remaining)+"h | Status: "+status_text+"[/color]"
+	var lock_text = "locked"
+	if(timer_unlocked):
+		lock_text = "timer complete"
+	return "A flat smart chastity cage with a timer, flush status light, and recessed lock face. Its broad plate keeps the electronics protected and easy to inspect.\n[color=gray]Mode: "+mode_name+" | Timer: "+str(hours_remaining)+"h | Status: "+status_text+" | "+lock_text+"[/color]"
 
 func getClothingSlot():
 	return InventorySlot.Penis
@@ -31,6 +41,9 @@ func getBuffs():
 	]
 
 func getTakeOffScene():
+	syncTimer()
+	if(timer_unlocked):
+		return "TakeAnyItemOffScene"
 	return "RestraintTakeOffNopeScene"
 
 func getPrice():
@@ -77,17 +90,42 @@ func getInventoryImage():
 	return "res://Images/Items/bdsm/flatcage.png"
 
 func useInCombat(_attacker, _receiver):
+	syncTimer()
 	protocol_mode += 1
 	if(protocol_mode >= 3):
 		protocol_mode = 0
 	current_color += 1
 	if(current_color >= 3):
 		current_color = 0
-	hours_remaining = max(1, hours_remaining - 1)
+	if(hours_remaining > 0):
+		hours_remaining = max(0, hours_remaining - 1)
+	if(hours_remaining <= 0):
+		timer_unlocked = true
 	silent_status = !silent_status
 	if(isWornByWearer()):
 		updateWearerAppearance()
-	return "You cycle the flat smart cage to "+["Standard", "Silent", "Strict"][protocol_mode]+". The timer now reads "+str(hours_remaining)+"h."
+	var extra_text = "You cycle the flat smart cage to "+["Standard", "Silent", "Strict"][protocol_mode]+". The timer now reads "+str(hours_remaining)+"h."
+	return ChastityUseLogic.new().perform(self, _attacker, "flat timed smart cage", 2, extra_text, _receiver == null)
+
+func getCurrentTimerSecond():
+	if(GM.main != null):
+		return GM.main.getTimeInGlobalSeconds()
+	return 0
+
+func syncTimer():
+	var now = getCurrentTimerSecond()
+	if(last_timer_second < 0):
+		last_timer_second = now
+		return
+	if(now <= last_timer_second):
+		return
+	var elapsed_hours = int((now - last_timer_second) / (60 * 60))
+	if(elapsed_hours <= 0):
+		return
+	hours_remaining = max(0, hours_remaining - elapsed_hours)
+	last_timer_second += elapsed_hours * 60 * 60
+	if(hours_remaining <= 0):
+		timer_unlocked = true
 
 func getPossibleActions():
 	return [
@@ -99,21 +137,31 @@ func getPossibleActions():
 	]
 
 func saveData():
+	syncTimer()
 	var data = .saveData()
 	data["current_color"] = current_color
 	data["protocol_mode"] = protocol_mode
 	data["hours_remaining"] = hours_remaining
 	data["silent_status"] = silent_status
+	data["last_timer_second"] = last_timer_second
+	data["timer_unlocked"] = timer_unlocked
+	data["use_count"] = use_count
+	data["stimulation_style"] = stimulation_style
 	return data
 
 func loadData(data):
 	.loadData(data)
 	current_color = clamp(SAVE.loadVar(data, "current_color", 0), 0, 2)
 	protocol_mode = clamp(SAVE.loadVar(data, "protocol_mode", 0), 0, 2)
-	hours_remaining = max(1, int(SAVE.loadVar(data, "hours_remaining", 12)))
+	hours_remaining = max(0, int(SAVE.loadVar(data, "hours_remaining", 12)))
 	silent_status = SAVE.loadVar(data, "silent_status", false)
+	last_timer_second = int(SAVE.loadVar(data, "last_timer_second", -1))
+	timer_unlocked = SAVE.loadVar(data, "timer_unlocked", false)
+	use_count = SAVE.loadVar(data, "use_count", 0)
+	stimulation_style = clamp(SAVE.loadVar(data, "stimulation_style", 0), 0, 2)
 
 func getDatapackEditVars():
+	syncTimer()
 	var result = .getDatapackEditVars()
 	result["protocol_mode"] = {
 		"name": "Protocol",
@@ -138,6 +186,7 @@ func applyDatapackEditVar(_id, _value):
 	if(_id == "protocol_mode"):
 		protocol_mode = clamp(int(_value), 0, 2)
 	if(_id == "hours_remaining"):
-		hours_remaining = max(1, int(_value))
+		hours_remaining = max(0, int(_value))
+		timer_unlocked = hours_remaining <= 0
 	if(_id == "silent_status"):
 		silent_status = _value

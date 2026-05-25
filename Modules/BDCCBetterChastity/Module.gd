@@ -11,12 +11,15 @@ func _init():
 	author = "Coderboy58585"
 
 	items = [
+		"res://Modules/BDCCBetterChastity/Items/StandardChastityCage.gd",
 		"res://Modules/BDCCBetterChastity/Items/ErgonomicChastityCage.gd",
 		"res://Modules/BDCCBetterChastity/Items/TamperEvidentChastityCage.gd",
 		"res://Modules/BDCCBetterChastity/Items/TimedSmartChastityCage.gd",
 		"res://Modules/BDCCBetterChastity/Items/FlatErgonomicChastityCage.gd",
 		"res://Modules/BDCCBetterChastity/Items/FlatTamperEvidentChastityCage.gd",
 		"res://Modules/BDCCBetterChastity/Items/FlatTimedSmartChastityCage.gd",
+		"res://Modules/BDCCBetterChastity/Items/PermanentChastityCage.gd",
+		"res://Modules/BDCCBetterChastity/Items/FlatPermanentChastityCage.gd",
 	]
 
 func resetFlagsOnNewDay():

@@ -1,7 +1,11 @@
 extends ItemBase
 
+const ChastityUseLogic = preload("res://Modules/BDCCBetterChastity/ChastityUseLogic.gd")
+
 var seal_integrity = 100
 var plate_number = 417
+var use_count = 0
+var stimulation_style = 0
 
 func _init():
 	id = "BBC_FlatTamperEvidentChastityCage"
@@ -75,7 +79,8 @@ func useInCombat(_attacker, _receiver):
 	seal_integrity = max(0, seal_integrity - RNG.randi_range(2, 6))
 	if(restraintData != null && restraintData.has_method("setSealIntegrity")):
 		restraintData.setSealIntegrity(seal_integrity)
-	return "You inspect the recessed seal and plate number. The seal is now at "+str(seal_integrity)+"% integrity."
+	var extra_text = "You inspect the recessed seal and plate number. The seal is now at "+str(seal_integrity)+"% integrity."
+	return ChastityUseLogic.new().perform(self, _attacker, "flat tamper-evident cage", 2, extra_text, _receiver == null)
 
 func getPossibleActions():
 	return [
@@ -90,12 +95,16 @@ func saveData():
 	var data = .saveData()
 	data["seal_integrity"] = seal_integrity
 	data["plate_number"] = plate_number
+	data["use_count"] = use_count
+	data["stimulation_style"] = stimulation_style
 	return data
 
 func loadData(data):
 	.loadData(data)
 	seal_integrity = clamp(SAVE.loadVar(data, "seal_integrity", 100), 0, 100)
 	plate_number = int(SAVE.loadVar(data, "plate_number", 417))
+	use_count = SAVE.loadVar(data, "use_count", 0)
+	stimulation_style = clamp(SAVE.loadVar(data, "stimulation_style", 0), 0, 2)
 
 func getDatapackEditVars():
 	var result = .getDatapackEditVars()

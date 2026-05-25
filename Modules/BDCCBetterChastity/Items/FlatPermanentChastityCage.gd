@@ -2,20 +2,18 @@ extends ItemBase
 
 const ChastityUseLogic = preload("res://Modules/BDCCBetterChastity/ChastityUseLogic.gd")
 
-var service_count = 0
-var fit_setting = 1
 var use_count = 0
 var stimulation_style = 0
+var plate_condition = 100
 
 func _init():
-	id = "BBC_ErgonomicChastityCage"
+	id = "BBC_FlatPermanentChastityCage"
 
 func getVisibleName():
-	return "Ergonomic Chastity Cage"
+	return "Flat Permanent Chastity Cage"
 
 func getDescription():
-	var fit_text = ["loose", "balanced", "snug"][fit_setting]
-	return "A long-wear chastity cage with rounded edges, breathable spacing, and a "+fit_text+" fit setting. It is still a real restraint, but it is designed to be serviced instead of simply endured.\n[color=gray]Service count: "+str(service_count)+"[/color]"
+	return "A permanent flat chastity cage with a broad sealed plate and no normal removal path. The plate spreads pressure evenly while making the lock face obvious.\n[color=gray]Plate condition: "+str(plate_condition)+"% | Uses logged: "+str(use_count)+"[/color]"
 
 func getClothingSlot():
 	return InventorySlot.Penis
@@ -26,14 +24,14 @@ func getRequiredBodypart():
 func getBuffs():
 	return [
 		buff(Buff.ChastityPenisBuff),
-		buff(Buff.SensitivityGainBuff, [12.0 + float(fit_setting) * 5.0]),
+		buff(Buff.SensitivityGainBuff, [32.0]),
 	]
 
 func getTakeOffScene():
 	return "RestraintTakeOffNopeScene"
 
 func getPrice():
-	return 35
+	return 80
 
 func canSell():
 	return true
@@ -45,14 +43,13 @@ func isRestraint():
 	return true
 
 func generateRestraintData():
-	restraintData = preload("res://Modules/BDCCBetterChastity/Restraints/BetterChastityRestraint.gd").new()
-	restraintData.setLevel(4)
-	restraintData.setProfile("comfort")
+	restraintData = RestraintUnremovable.new()
+	restraintData.setLevel(calculateBestRestraintLevel())
 
 func getForcedOnMessage(isPlayer = true):
 	if(isPlayer):
-		return getAStackNameCapitalize()+" was locked into place with a careful click."
-	return getAStackNameCapitalize()+" was locked onto {receiver.nameS} body with a careful click."
+		return getAStackNameCapitalize()+" pressed flat and locked with a permanent seal."
+	return getAStackNameCapitalize()+" pressed flat against {receiver.nameS} body and locked with a permanent seal."
 
 func getRiggedParts(_character):
 	return {
@@ -76,50 +73,42 @@ func getInventoryImage():
 	return "res://Images/Items/bdsm/flatcage.png"
 
 func useInCombat(_attacker, _receiver):
-	service_count += 1
-	fit_setting += 1
-	if(fit_setting > 2):
-		fit_setting = 0
-	if(isWornByWearer()):
-		updateWearerAppearance()
-	var extra_text = "You service the ergonomic cage, check the edges, and reset the fit to "+["loose", "balanced", "snug"][fit_setting]+"."
-	return ChastityUseLogic.new().perform(self, _attacker, "ergonomic cage", 1, extra_text, _receiver == null)
+	plate_condition = max(0, plate_condition - RNG.randi_range(1, 4))
+	var extra_text = "You check the flat permanent plate. The plate condition is now "+str(plate_condition)+"%."
+	return ChastityUseLogic.new().perform(self, _attacker, "flat permanent cage", 3, extra_text, _receiver == null)
 
 func getPossibleActions():
 	return [
 		{
-			"name": "Service fit",
+			"name": "Use plate",
 			"scene": "UseItemLikeInCombatScene",
-			"description": "Clean the cage and rotate its fit setting.",
+			"description": "Use the permanent flat plate and check its condition.",
 		},
 	]
 
 func saveData():
 	var data = .saveData()
-	data["service_count"] = service_count
-	data["fit_setting"] = fit_setting
 	data["use_count"] = use_count
 	data["stimulation_style"] = stimulation_style
+	data["plate_condition"] = plate_condition
 	return data
 
 func loadData(data):
 	.loadData(data)
-	service_count = SAVE.loadVar(data, "service_count", 0)
-	fit_setting = clamp(SAVE.loadVar(data, "fit_setting", 1), 0, 2)
 	use_count = SAVE.loadVar(data, "use_count", 0)
 	stimulation_style = clamp(SAVE.loadVar(data, "stimulation_style", 0), 0, 2)
+	plate_condition = clamp(SAVE.loadVar(data, "plate_condition", 100), 0, 100)
 
 func getDatapackEditVars():
 	var result = .getDatapackEditVars()
-	result["fit_setting"] = {
-		"name": "Fit setting",
-		"type": "selector",
-		"value": fit_setting,
-		"values": [[0, "Loose"], [1, "Balanced"], [2, "Snug"]],
+	result["plate_condition"] = {
+		"name": "Plate condition",
+		"type": "number",
+		"value": plate_condition,
 	}
 	return result
 
 func applyDatapackEditVar(_id, _value):
 	.applyDatapackEditVar(_id, _value)
-	if(_id == "fit_setting"):
-		fit_setting = clamp(int(_value), 0, 2)
+	if(_id == "plate_condition"):
+		plate_condition = clamp(int(_value), 0, 100)

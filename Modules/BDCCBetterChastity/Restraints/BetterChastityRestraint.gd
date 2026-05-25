@@ -10,6 +10,8 @@ func setSealIntegrity(new_value):
 	seal_integrity = clamp(int(new_value), 0, 100)
 
 func getProfileName():
+	if(profile == "standard"):
+		return "standard-fit"
 	if(profile == "comfort"):
 		return "comfort-fit"
 	if(profile == "flat_comfort"):
@@ -35,7 +37,16 @@ func doStruggle(_pc, _minigame:MinigameResult):
 	var damage = 0
 	var stamina = 0
 
-	if(profile == "comfort"):
+	if(profile == "standard"):
+		if(can_work_properly):
+			text = "{user.name} checks the standard cage's lock and hinge, but the familiar correctional frame holds firm."
+			damage = calcDamage(_pc, _minigame, 0.5)
+			stamina = 7
+		else:
+			text = "{user.name} shifts against the standard cage. It stays locked and keeps the pressure direct."
+			damage = calcDamage(_pc, _minigame, 0.12)
+			stamina = 4
+	elif(profile == "comfort"):
 		if(can_work_properly):
 			text = "{user.name} carefully checks the ergonomic cage, but the rounded fit leaves very little to grip."
 			damage = calcDamage(_pc, _minigame, 0.55)
