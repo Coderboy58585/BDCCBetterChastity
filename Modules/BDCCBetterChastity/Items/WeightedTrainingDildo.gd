@@ -1,101 +1,92 @@
-extends ItemBase
-
-const ToyUseLogic = preload("res://Modules/BDCCBetterChastity/ToyUseLogic.gd")
-
-var use_count = 0
-var training_score = 0
-var current_mode = 0
+extends "res://Modules/BDCCBetterChastity/Items/BetterChastityToyBase.gd"
 
 func _init():
 	id = "BBC_WeightedTrainingDildo"
+	clothesColor = Color(0.1, 0.1, 0.13)
 
-func getVisibleName():
-	return "Weighted Training Dildo"
+func getToyName():
+	return "Weighted Training Strapon"
 
-func getDescription():
-	return "A heavier Better Chastity toy with a dense core and slower, stricter pacing. It alternates between external pressure training and prostate focus.\n[color=gray]Next mode: "+getModeLabel()+" | Training score: "+str(training_score)+"[/color]"
+func getToyDescription():
+	return "A heavier wearable Better Chastity toy with a stricter pace. It uses BDCC's strapon gear behavior and has an animated solo-training action."
 
-func getModeLabel():
-	if(current_mode == 1):
-		return "prostate focus"
-	return "external pressure"
+func getToyLabel():
+	return "weighted training strapon"
 
-func getModeID():
-	if(current_mode == 1):
-		return "prostate"
-	return "external"
+func getToyIntensity():
+	return 3
 
-func canUseInCombat():
-	return true
+func getToyStretchPower():
+	return 28
 
-func useInCombat(_attacker, _receiver):
-	var mode = getModeID()
-	var mode_label = getModeLabel()
-	current_mode += 1
-	if(current_mode > 1):
-		current_mode = 0
-	return ToyUseLogic.new().perform(self, _attacker, "weighted training dildo", 3, mode, "You brace yourself and set the weighted toy to "+mode_label+".", _receiver == null)
+func getToyFluidCapacity():
+	return 900.0
 
-func getPossibleActions():
-	return [
-		{
-			"name": "Use weighted toy",
-			"scene": "UseItemLikeInCombatScene",
-			"description": "Run a stricter Better Chastity toy routine.",
-		},
-	]
+func getToyAnimationProfile():
+	return "canine"
 
-func getPrice():
-	return 24
+func getToyStageScene():
+	return StageScene.CanineDildoSex
 
-func canSell():
-	return true
+func getToyFastAnim():
+	return "knotfast"
+
+func getToyFinishAnim():
+	return "knotfast"
+
+func getClothingSlot():
+	return InventorySlot.Strapon
 
 func getTags():
-	return [ItemTag.SoldByMedicalVendomat, ItemTag.SoldByTheAnnouncer, ItemTag.SexEngineCanApply]
+	return [ItemTag.Strapon, ItemTag.SoldByMedicalVendomat, ItemTag.SoldByTheAnnouncer, ItemTag.SexEngineCanApply]
 
-func getItemCategory():
-	return ItemCategory.BDSM
+func getRiggedParts(_character):
+	if(itemState.isRemoved()):
+		return null
+	return {
+		"strapon": "res://Inventory/RiggedModels/Strapons/CaninecockStrapon.tscn",
+	}
+
+func getHidesParts(_character):
+	return {
+		BodypartSlot.Penis: true,
+		"chastity_cage": true,
+	}
+
+func shouldBeVisibleOnDoll(_character, _doll):
+	if(!_character.isBodypartCovered(BodypartSlot.Penis) || _doll.isForcedExposed(BodypartSlot.Penis)):
+		return true
+	return false
+
+func updateDoll(doll: Doll3D):
+	doll.setPenisScale(1.08)
+	doll.setBallsScale(1.0)
+
+func getStraponLength():
+	return 24.0
+
+func getStraponPleasureForDom():
+	return 0.25
+
+func getPutOnScene():
+	return "StraponPutOnScene"
+
+func getCasualName():
+	return "weighted training strapon"
+
+func getLewdStraponName() -> String:
+	return "weighted training strapon"
 
 func getInventoryImage():
-	return "res://Images/Items/strapons/human.png"
+	return "res://Images/Items/strapons/canine.png"
 
-func getSexEngineSubcategory() -> Array:
-	return ["Better Chastity toys"]
+func alwaysRecoveredAfterSex():
+	return true
 
-func getSexEngineInfo(_sexEngine, _domInfo, _subInfo):
-	var sub:BaseCharacter = _subInfo.getChar()
-	var dom:BaseCharacter = _domInfo.getChar()
+func canDye():
+	return true
+
+func getStraponTraits() -> Dictionary:
 	return {
-		"name": "Weighted training",
-		"usedName": "a weighted training toy",
-		"desc": "Adds stronger Better Chastity toy-training focus and pressure.",
-		"scoreOnSub": 0.12,
-		"scoreOnSelf": 0.06,
-		"scoreSubScore": 0.2,
-		"canUseOnDom": dom.hasReachableAnus(),
-		"canUseOnSub": sub.hasReachableAnus(),
-		"maxUsesByNPC": 1,
+		PartTrait.PenisKnot: true,
 	}
-
-func useInSex(_receiver):
-	_receiver.addLust(9)
-	_receiver.addStamina(-4)
-	_receiver.addEffect("BBC_ProstateFocus", [60 * 60, 1.5])
-	_receiver.addEffect("BBC_SissyEuphoria", [60 * 35, 1.0])
-	return {
-		text = "{USER.You} {USER.youVerb('sink')} into a heavier Better Chastity training rhythm.".replace("USER", _receiver.getID()),
-	}
-
-func saveData():
-	var data = .saveData()
-	data["use_count"] = use_count
-	data["training_score"] = training_score
-	data["current_mode"] = current_mode
-	return data
-
-func loadData(data):
-	.loadData(data)
-	use_count = SAVE.loadVar(data, "use_count", 0)
-	training_score = SAVE.loadVar(data, "training_score", 0)
-	current_mode = clamp(SAVE.loadVar(data, "current_mode", 0), 0, 1)

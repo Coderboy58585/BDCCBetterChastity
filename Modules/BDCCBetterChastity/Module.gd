@@ -6,6 +6,9 @@ func getFlags():
 		"BBC_LastDeviceMode": flag(FlagType.Text),
 		"BBC_ToyTrainingScore": flag(FlagType.Number),
 		"BBC_FeminizingProgramCount": flag(FlagType.Number),
+		"BBC_PlapgasmCount": flag(FlagType.Number),
+		"BBC_CuckHeatCount": flag(FlagType.Number),
+		"BBC_NippleTrainingCount": flag(FlagType.Number),
 	}
 
 func _init():
@@ -25,14 +28,29 @@ func _init():
 		"res://Modules/BDCCBetterChastity/Items/SoftTrainingDildo.gd",
 		"res://Modules/BDCCBetterChastity/Items/WeightedTrainingDildo.gd",
 		"res://Modules/BDCCBetterChastity/Items/ProstatePulseStimulator.gd",
+		"res://Modules/BDCCBetterChastity/Items/HorseTrainingDildo.gd",
+		"res://Modules/BDCCBetterChastity/Items/WolfTrainingDildo.gd",
+		"res://Modules/BDCCBetterChastity/Items/TentacleTrainingDildo.gd",
+		"res://Modules/BDCCBetterChastity/Items/NipplePulseStimulators.gd",
 		"res://Modules/BDCCBetterChastity/Items/SterileSoundingKit.gd",
 		"res://Modules/BDCCBetterChastity/Items/EstraluxPatch.gd",
+		"res://Modules/BDCCBetterChastity/Items/EstraluxAmpoule.gd",
+	]
+
+	scenes = [
+		"res://Modules/BDCCBetterChastity/Scenes/AnimatedToyScene.gd",
+		"res://Modules/BDCCBetterChastity/Scenes/NippleStimulatorScene.gd",
+		"res://Modules/BDCCBetterChastity/Scenes/EstraluxApplicationScene.gd",
+		"res://Modules/BDCCBetterChastity/Scenes/SterileCalibrationScene.gd",
 	]
 
 	statusEffects = [
 		"res://Modules/BDCCBetterChastity/StatusEffects/SissyEuphoria.gd",
 		"res://Modules/BDCCBetterChastity/StatusEffects/ProstateFocus.gd",
 		"res://Modules/BDCCBetterChastity/StatusEffects/FeminizingShift.gd",
+		"res://Modules/BDCCBetterChastity/StatusEffects/PlapgasmCharge.gd",
+		"res://Modules/BDCCBetterChastity/StatusEffects/CuckHeat.gd",
+		"res://Modules/BDCCBetterChastity/StatusEffects/NippleFocus.gd",
 	]
 
 	sexActivities = [

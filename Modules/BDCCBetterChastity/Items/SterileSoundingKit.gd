@@ -28,8 +28,9 @@ func getPossibleActions():
 	return [
 		{
 			"name": "Calibrate kit",
-			"scene": "UseItemLikeInCombatScene",
+			"scene": "BBC_SterileCalibrationScene",
 			"description": "Run a sealed Better Chastity sounding calibration routine.",
+			"onlyWhenCalm": true,
 		},
 	]
 

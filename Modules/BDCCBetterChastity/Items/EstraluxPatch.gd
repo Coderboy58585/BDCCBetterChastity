@@ -11,20 +11,35 @@ func getVisibleName():
 func getDescription():
 	return "A fictional estrogen-themed Better Chastity patch. It applies a temporary feminizing-shift status and can nudge compatible body-transformation systems.\n[color=gray]This is fantasy gameplay content, not real medication.[/color]"
 
+func getApplicationLabel():
+	return "Estralux patch"
+
+func getDoseDuration():
+	return 60 * 60 * 6
+
+func getShiftPower():
+	return 1.0
+
+func getMaxBreastSize():
+	return BreastsSize.DD
+
 func canUseInCombat():
 	return true
 
 func useInCombat(_attacker, _receiver):
+	return applyEstralux(_attacker, _receiver == null)
+
+func applyEstralux(_attacker, advance_time = true):
 	doses_used += 1
 	if(_attacker != null):
-		_attacker.addEffect("BBC_FeminizingShift", [60 * 60 * 6, 1.0])
-		_attacker.addLust(4)
+		_attacker.addEffect("BBC_FeminizingShift", [getDoseDuration(), getShiftPower()])
+		_attacker.addLust(3 + int(getShiftPower() * 3.0))
 		_attacker.addStamina(-2)
 	var body_text = applyBodyNudge(_attacker)
 	removeXOrDestroy(1)
-	if(GM.main != null && _receiver == null):
+	if(advance_time && GM.main != null):
 		GM.main.processTime(5 * 60)
-	return "{attacker.name} applies an Estralux patch. The fantasy hormone program warms under the skin and syncs with Better Chastity training."+body_text
+	return "{attacker.name} applies "+getApplicationLabel()+". The fictional estrogen program warms under the skin and syncs with Better Chastity training."+body_text
 
 func applyBodyNudge(wearer):
 	if(wearer == null):
@@ -34,7 +49,7 @@ func applyBodyNudge(wearer):
 		var breasts = wearer.getBodypart(BodypartSlot.Breasts)
 		if(breasts != null && breasts.has_method("setBreastSizeSafe") && breasts.has_method("getSize")):
 			var old_size = breasts.getSize()
-			var new_size = min(BreastsSize.DD, old_size + 1)
+			var new_size = min(getMaxBreastSize(), old_size + 1)
 			if(new_size > old_size):
 				breasts.setBreastSizeSafe(new_size)
 				text_parts.append("breast tissue softens slightly")
@@ -51,8 +66,9 @@ func getPossibleActions():
 	return [
 		{
 			"name": "Apply patch",
-			"scene": "UseItemLikeInCombatScene",
+			"scene": "BBC_EstraluxApplicationScene",
 			"description": "Apply the fictional feminizing Better Chastity patch.",
+			"onlyWhenCalm": true,
 		},
 	]
 
@@ -94,7 +110,7 @@ func getSexEngineInfo(_sexEngine, _domInfo, _subInfo):
 	}
 
 func useInSex(_receiver):
-	_receiver.addEffect("BBC_FeminizingShift", [60 * 60 * 6, 1.0])
+	_receiver.addEffect("BBC_FeminizingShift", [getDoseDuration(), getShiftPower()])
 	var body_text = applyBodyNudge(_receiver)
 	return {
 		text = "{USER.You} {USER.youVerb('feel')} a fictional Better Chastity feminizing program settle in.".replace("USER", _receiver.getID())+body_text,
